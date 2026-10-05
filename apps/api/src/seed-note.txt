@@ -1,0 +1,2 @@
+Run from apps/api after dependencies are installed:
+npx prisma db seed

@@ -1,0 +1,6 @@
+import { Module } from '@nestjs/common';
+import { Body, Controller, Get, Injectable, Param, Patch, Post } from '@nestjs/common'; import { PrismaService } from './prisma.service';
+function normalizePhone(input:string){let n=input.replace(/\D/g,''); if(n.startsWith('91')&&n.length===12)n=n.slice(2); if(n.length===10&&/^[6-9]/.test(n))return '+91'+n; return input.startsWith('+')?'+'+n:n;}
+@Injectable() class MembersService { constructor(private db:PrismaService){} list(){return this.db.member.findMany({orderBy:{createdAt:'desc'},include:{group:true}})} create(b:any){return this.db.member.upsert({where:{phone:normalizePhone(b.phone)},update:{name:b.name,sourceMessage:b.sourceMessage},create:{name:b.name,phone:normalizePhone(b.phone),sourceMessage:b.sourceMessage,groupId:b.groupId}})} async status(id:string,status:any){return this.db.member.update({where:{id},data:{status,approvedAt:status==='ACTIVE'?new Date():undefined}})} }
+@Controller('members') class MembersController { constructor(private s:MembersService){} @Get() list(){return this.s.list()} @Post() create(@Body() b:any){return this.s.create(b)} @Patch(':id/status') status(@Param('id') id:string,@Body() b:{status:any}){return this.s.status(id,b.status)} }
+@Module({controllers:[MembersController],providers:[MembersService,PrismaService]}) export class MembersModule{}

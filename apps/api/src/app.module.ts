@@ -1,0 +1,2 @@
+import { Module } from '@nestjs/common'; import { AuthModule } from './auth.module'; import { MembersModule } from './members.module'; import { ArticlesModule } from './articles.module'; import { CampaignsModule } from './campaigns.module'; import { WhatsAppModule } from './whatsapp.module';
+@Module({imports:[AuthModule,MembersModule,ArticlesModule,CampaignsModule,WhatsAppModule]}) export class AppModule{}
